@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "sts.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    },
+    {
+      "Sid": "ff",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:sts::167127734783:assumed-role/test-lambda-role/s3-to-elasticsearch"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}

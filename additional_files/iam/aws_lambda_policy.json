@@ -1,0 +1,66 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "LogGroupAllows",
+            "Effect": "Allow",
+            "Action": "logs:CreateLogGroup",
+            "Resource": "arn:aws:logs:us-east-1:167127734783:*"
+        },
+        {
+            "Sid": "LogStreamAllows",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-east-1:167127734783:log-group:/aws/lambda/s3-to-elasticsearch:*"
+            ]
+        },
+        {
+            "Sid": "ESAllows",
+            "Effect": "Allow",
+            "Action": [
+                "es:ListElasticsearchInstanceTypeDetails",
+                "es:CreateElasticsearchDomain",
+                "es:ListTags",
+                "es:ESHttpDelete",
+                "es:DeleteElasticsearchServiceRole",
+                "es:GetUpgradeHistory",
+                "es:ESHttpHead",
+                "es:DeleteElasticsearchDomain",
+                "es:DescribeElasticsearchDomain",
+                "es:UpgradeElasticsearchDomain",
+                "es:ESHttpPost",
+                "es:ESHttpPatch",
+                "es:DescribeElasticsearchDomains",
+                "es:DescribeReservedElasticsearchInstanceOfferings",
+                "es:CreateElasticsearchServiceRole",
+                "es:ESHttpGet",
+                "es:DescribeElasticsearchDomainConfig",
+                "es:PurchaseReservedElasticsearchInstanceOffering",
+                "es:DescribeReservedElasticsearchInstances",
+                "es:ListDomainNames",
+                "es:UpdateElasticsearchDomainConfig",
+                "es:GetCompatibleElasticsearchVersions",
+                "es:GetUpgradeStatus",
+                "es:ListElasticsearchInstanceTypes",
+                "es:ListElasticsearchVersions",
+                "es:DescribeElasticsearchInstanceTypeLimits",
+                "es:ESHttpPut"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "S3Allows",
+            "Effect": "Allow",
+            "Action": [
+                "S3:*"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}

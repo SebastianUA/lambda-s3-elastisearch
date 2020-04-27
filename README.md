@@ -79,6 +79,7 @@ $ python3 s3-to-elastisearch.py --lambda=False --role-name="role_here" --role-se
 To use this python script as AWS Lambda, you must add the next environment variables inside AWS Lambda:
 
 - aws_s3_bucket_name - Set AWS S3 bucket name where the CSV files will be located.
+- elasticsearch_url -  Set the URL where the ElasticSearch located is. For Ex: "localhost:9200".
 - aws_boto3_client - Set client for boto3.
 - aws_region - Set the region for AWS usage.
 - aws_profile_name - The name of a profile to use. It can be skipped if planned to use the AWS IAM role with session parameters (parameters below).
@@ -86,6 +87,8 @@ To use this python script as AWS Lambda, you must add the next environment varia
 - aws_role_session - If aws_profile_name is not set, this parameter MUST be specified as AWS IAM session for aws_role_name.
 
 ![Lambda_envs.png](https://github.com/SebastianUA/lambda-s3-elastisearch/blob/master/additional_files/pics/Lambda_envs.png)
+
+The AWS IAM policies and roles located at `./additional_files/iam` folder and can be used for that script.
 
 
 ## Authors

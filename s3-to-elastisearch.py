@@ -109,7 +109,7 @@ def s3_objects(aws_auth, s3_bucket_name):
     if bucket_name:
         try:
             for key in s3.list_objects(Bucket=s3_bucket_name)['Contents']:
-                print(key['Key'])
+                # print(key['Key'])
                 key_name = key['Key']
                 if (key_name.endswith('.gz')) or (key_name.endswith('.tar.gz')):
                     retr = s3.get_object(Bucket=s3_bucket_name, Key=key_name)
@@ -117,9 +117,9 @@ def s3_objects(aws_auth, s3_bucket_name):
                     content = GzipFile(None, 'rb', fileobj=bytestream).read().decode('utf-8')
                     s3objects.append(content)
                 else:
-                    response = s3.get_object(Bucket=s3_bucket_name, Key=key_name)
-                    content = response['Body'].read().decode("utf-8").replace("'", '"')
-                    s3objects.append(content)
+                    data = s3.get_object(Bucket=s3_bucket_name, Key=key_name)
+                    contents = data['Body'].read()
+                    s3objects.append(contents)
 
                 logger.info('SUCCESS: Retrieved object(s) from S3 {0} bucket'.format(s3_bucket_name))
         except Exception as e:
@@ -143,7 +143,9 @@ def sending_data_to_elastisearch(es_url, docData):
                                 retries=False,
                                 timeout=30)
 
-        print('Response status: ', response.status, "\nResponse data: ", response.data.decode('utf-8'))
+        # print('Response status: ', response.status, "\nResponse data: ", response.data.decode('utf-8'))
+
+        logger.error('ERROR [response status]: {0}'.format(response.status))
 
         if response.status == 201:
             logger.info('INFO: Response status: {0}\nResponse data: {1}'.format(response.status,
@@ -159,6 +161,7 @@ def sending_data_to_elastisearch(es_url, docData):
         logger.error('ERROR: {0}'.format(str(e)))
         logger.error('ERROR: Unable to index line:"{0}"'.format(str(docData['content'])))
         print(e)
+        exit(1)
 
     return sending_data_to_elastisearch
 
@@ -190,13 +193,18 @@ def lambda_handler(event, context):
     }
 
     s3_bucket_name = os.environ['aws_s3_bucket_name']
+    es_url = os.environ['elasticsearch_url']
 
     logger.info("Received event: " + json.dumps(event, indent=2))
 
     s3objects = s3_objects(aws_auth, s3_bucket_name)
-   
+
     for obj in s3objects:
-        reader = csv.DictReader(StringIO(obj), fieldnames=None, restkey=None, restval=None, dialect='excel')
+        reader = csv.DictReader(StringIO(obj.decode('utf-8')),
+                                fieldnames=None,
+                                restkey=None,
+                                restval=None,
+                                dialect='excel')
         for row in reader:
             json_out = json.loads(json.dumps(row))
 
