@@ -11,6 +11,12 @@ First of all, install ```python3```, for example:
 $ brew install python3
 ```
 
+NOTE: You have to install HOMEBREW, the command here:
+
+```bash
+$ sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+```
+
 Secondly, installing PIP:
 
 ```bash
@@ -50,7 +56,13 @@ optional arguments:
 created by Vitalii Natarov
 ```
 
-Examples:
+## Examples:
+
+I developed python scipt to support local usage and AWS Lambda.
+
+### Local usage
+
+If you want to run locally, you can use one of the next commands:
 
 ```bash
 $ python3 s3-to-elastisearch.py --lambda=False --profile-name=default
@@ -61,6 +73,20 @@ Or:
 ```bash
 $ python3 s3-to-elastisearch.py --lambda=False --role-name="role_here" --role-session="session"
 ```
+
+### AWS Lambda
+
+To use this python script as AWS Lambda, you must add the next environment variables inside AWS Lambda:
+
+- aws_s3_bucket_name - Set AWS S3 bucket name where the CSV files will be located.
+- aws_boto3_client - Set client for boto3.
+- aws_region - Set the region for AWS usage.
+- aws_profile_name - The name of a profile to use. It can be skipped if planned to use the AWS IAM role with session parameters (parameters below).
+- aws_role_name - If aws_profile_name is not set, this parameter MUST be specified as AWS IAM role to allow AWS Lambda gets AWS resources.
+- aws_role_session - If aws_profile_name is not set, this parameter MUST be specified as AWS IAM session for aws_role_name.
+
+![Lambda_envs.png](https://github.com/SebastianUA/lambda-s3-elastisearch/blob/master/additional_files/pics/Lambda_envs.png)
+
 
 ## Authors
 Created and maintained by [Vitaliy Natarov](https://github.com/SebastianUA). An email: [vitaliy.natarov@yahoo.com](vitaliy.natarov@yahoo.com).

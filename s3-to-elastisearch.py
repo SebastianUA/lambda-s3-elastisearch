@@ -28,22 +28,9 @@ globalVars['esIndexPrefix'] = "s3-to-es-"
 globalVars['esIndexDocType'] = "s3_to_es_docs"
 
 
-class Bgcolors:
-    def __init__(self):
-        self.colors = {
-            'PURPURE': '\033[95m',
-            'BLUE': '\033[94m',
-            'GREEN': '\033[92m',
-            'YELLOW': '\033[93m',
-            'RED': '\033[91m',
-            'ENDC': '\033[0m',
-            'BOLD': '\033[1m',
-            'UNDERLINE': '\033[4m'
-        }
-
-
 def s3_connector(aws_auth):
-    if (aws_auth['role_name'] is None) and (aws_auth['role_session'] is None):
+    if (aws_auth['role_name'] is None or aws_auth['role_name'] == "None") \
+            and (aws_auth['role_session'] is None or aws_auth['role_session'] == "None"):
         try:
             session = boto3.session.Session(profile_name=aws_auth['profile_name'])
             # Will retry any method call at most 3 time(s)
@@ -53,12 +40,12 @@ def s3_connector(aws_auth):
                                 )
             return s3
         except Exception as err:
-            print("Failed to create a boto3 client connection to S3:\n", Bgcolors().colors['RED'] + str(err),
-                  Bgcolors().colors['ENDC'])
+            print("Failed to create a boto3 client connection to S3:\n", str(err))
             logger.error('ERROR: Failed to create a boto3 client connection to S3')
             return False
-    elif (aws_auth['profile_name'] is None) and (aws_auth['role_name'] is not None) and\
-            (aws_auth['role_session'] is not None):
+    elif (aws_auth['profile_name'] is None or aws_auth['profile_name'] == "None") \
+            and (aws_auth['role_name'] is not None or aws_auth['role_name'] != "None") \
+            and (aws_auth['role_session'] is not None or aws_auth['role_session'] != "None"):
         try:
             session = boto3.session.Session()
             sts = session.client(service_name='sts',
@@ -81,8 +68,7 @@ def s3_connector(aws_auth):
 
             return s3
         except Exception as err:
-            print("Failed to create a boto3 client connection to S3:\n", Bgcolors().colors['RED'] + str(err),
-                  Bgcolors().colors['ENDC'])
+            print("Failed to create a boto3 client connection to S3:\n", str(err))
             logger.error('ERROR: Failed to create a boto3 client connection to S3')
             return False
     else:
@@ -106,7 +92,7 @@ def s3_bucket(aws_auth, s3_bucket_name):
                 logger.error('ERROR: Private {0} Bucket. Forbidden Access!'.format(s3_bucket_name))
             elif error_code == 404:
                 print("The {} bucket does not exist!".format(s3_bucket_name))
-                logger.error('ERROR: The {0} bucket Does Not Exist!'.format(s3_bucket_name))
+                logger.error('ERROR: The {0} bucket does not exist!'.format(s3_bucket_name))
             s3_bucket_status = False
             return s3_bucket_status
     else:
@@ -196,12 +182,14 @@ def pushing_locally(aws_auth, s3_bucket_name, es_url):
 def lambda_handler(event, context):
 
     aws_auth = {
-        "client": os.environ['boto3_client'],
+        "client": os.environ['aws_boto3_client'],
         "region": os.environ['aws_region'],
         "profile_name": os.environ['aws_profile_name'],
         "role_name": os.environ['aws_role_name'],
-        "role_session": os.environ['aws_role_name']
+        "role_session": os.environ['aws_role_session']
     }
+
+    s3_bucket_name = os.environ['aws_s3_bucket_name']
 
     logger.info("Received event: " + json.dumps(event, indent=2))
 
@@ -271,9 +259,3 @@ if __name__ == '__main__':
 
         end__time = round(time.time() - start__time, 2)
         print("--- %s seconds ---" % end__time)
-        print(Bgcolors().colors['GREEN'], "============================================================",
-              Bgcolors().colors['ENDC'])
-        print(Bgcolors().colors['GREEN'], "==========================FINISHED==========================",
-              Bgcolors().colors['ENDC'])
-        print(Bgcolors().colors['GREEN'], "============================================================",
-              Bgcolors().colors['ENDC'])
